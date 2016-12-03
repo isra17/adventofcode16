@@ -1,10 +1,3 @@
-;  hello.asm  a first program for nasm for Linux, Intel, gcc
-;
-; assemble:	nasm -f elf -l hello.lst  hello.asm
-; link:		gcc -o hello  hello.o
-; run:	        hello
-; output is:	Hello World
-
 %define sizeof(x) x %+ _size
 
 extern _puts
