@@ -23,6 +23,7 @@ vmap = set()
 pf = None
 for cmd in data.split(", "):
     cur = state[:2]
+    print repr(cur)
     state[2] = transition[cmd[0]][state[2]]
     for i in [0,1]:
         state[i] += dir_vecs[state[2]][i] * int(cmd[1:])
@@ -30,9 +31,7 @@ for cmd in data.split(", "):
     if pf is not None:
         break
 
-
 pf = pf or state
-
-
+print repr(pf)
 print abs(pf[0]) + abs(pf[1])
 

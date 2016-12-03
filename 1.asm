@@ -17,14 +17,51 @@ struc _main_stack
 .pad: resq 1
 endstruc
 
-; long@<rax> _abs(long@<rdi>)
+; long@<rax> _abs(long@<rax>)
 ; Returns absolute value of a variable.
 _abs:
   test  rax, rax
   jns   .ret
   neg   rax
-  .ret:
+.ret:
+  ret
+
+; long@<rax>, long@<rbx> _visit(<rdi> x, <rsi> y, <rdx> dir, <rcx> n)
+_visit:
+  ; r8: x direction
+  ; r9: y direction
+  ; r10: visited pointer
+  mov   r8, qword dir_x_map
+  movsx r8, byte [r8+rdx]
+  mov   r9, qword dir_y_map
+  movsx r9, byte [r9+rdx]
+  mov   r11, qword visit_map
+
+  .loop:
+    test  rcx, rcx
+    jz    .nohit
+    ; Could use a bitmap, but at that time I'm getting tired, so bytemap it is.
+    mov   r10, rdi
+    add   r10, 100h
+    imul  r10, 200h
+    add   r10, 100h
+    add   r10, rsi
+    add   r10, r11
+    movzx r11, byte [r10]
+    test  r11, r11
+    jnz   .hit
+    mov   byte [r10], 1
+
+    add   rdi, r8
+    add   rsi, r9
+    dec   rcx
+    jmp   _visit
+.hit:
   mov   rax, rdi
+  mov   rbx, rsi
+  ret
+.nohit:
+  mov   rax, 7fffffffh
   ret
 
 _main:
@@ -93,24 +130,33 @@ _main:
     lea   rsi, [rsp+_main_stack.p]
     mov   rdx, 10
     call  _strtol
-    mov   rcx, rax
+    mov   r15, rax
+
+    ; Check if the path hit a previous path.
+    mov   rdi, r13
+    mov   rsi, r14
+    mov   rdx, r12
+    mov   rcx, r15
+    call  _visit
+    cmp   rax, 7fffffffh
+    jnz   .hit
 
     ; Move x axis.
     mov   rdi, qword dir_x_map
     movsx rax, byte [rdi+r12]
-    imul  rcx
+    imul  r15
     add   r13, rax
 
     ; Move y axis.
     mov   rdi, qword dir_y_map
     movsx rax, byte [rdi+r12]
-    imul  rcx
+    imul  r15
     add   r14, rax
 
-    ;mov rdx, r14
-    ;mov rsi, r13
-    ;mov rdi, qword debugf
-    ;call _printf
+    mov rdx, r14
+    mov rsi, r13
+    mov rdi, qword debugf
+    call _printf
 
     ; Go to next command.
     mov   rdi, [rsp+_main_stack.p]
@@ -118,13 +164,21 @@ _main:
     mov   [rsp+_main_stack.p], rdi
     jmp   .process_cmd
 
+.hit:
+  mov   r13, rax
+  mov   r14, rbx
+
+  mov rdx, r14
+  mov rsi, r13
+  mov rdi, qword debugf
+  call _printf
 .process_done:
   ; Sum absolute value of x and y.
-  mov   rdi, r13
+  mov   rax, r13
   call  _abs
   mov   r13, rax
 
-  mov   rdi, r14
+  mov   rax, r14
   call  _abs
   add   rax, r13
 
@@ -153,6 +207,7 @@ _main:
 section .bss
 input_file: resq    1
 input_buffer: resb  1000h
+visit_map:  resb    40000h
 
 section .data
 input_path: db      "./1.txt", 0
