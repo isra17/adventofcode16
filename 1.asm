@@ -153,10 +153,10 @@ _main:
     imul  r15
     add   r14, rax
 
-    mov rdx, r14
-    mov rsi, r13
-    mov rdi, qword debugf
-    call _printf
+    ;mov rdx, r14
+    ;mov rsi, r13
+    ;mov rdi, qword debugf
+    ;call _printf
 
     ; Go to next command.
     mov   rdi, [rsp+_main_stack.p]
@@ -168,10 +168,10 @@ _main:
   mov   r13, rax
   mov   r14, rbx
 
-  mov rdx, r14
-  mov rsi, r13
-  mov rdi, qword debugf
-  call _printf
+  ;mov rdx, r14
+  ;mov rsi, r13
+  ;mov rdi, qword debugf
+  ;call _printf
 .process_done:
   ; Sum absolute value of x and y.
   mov   rax, r13
@@ -212,7 +212,7 @@ visit_map:  resb    40000h
 section .data
 input_path: db      "./1.txt", 0
 rb_mode:    db      "rb", 0
-resultf:    db      "Result: %d", 10, 0
+resultf:    db      "Day 1.5: %d", 10, 0
 debugf:     db      "[%d, %d]", 10, 0
 ; Directions:
 ; 0 = North

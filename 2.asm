@@ -57,7 +57,7 @@ _main:
   ; r12: current position
   ; r13: code pointer
   lea   rbx, [rsp + _s.input_buffer]
-  mov   r12, 5
+  mov   r12, 4
   mov   qword [rsp + _s.code_buffer], 0
   mov   qword [rsp + _s.code_buffer + 8], 0
   mov   qword [rsp + _s.code_buffer + 10h], 0
@@ -132,7 +132,7 @@ _main:
 section .data
 input_path: db      "./2.txt", 0
 rb_mode:    db      "rb", 0
-resultf:    db      "Result: %s", 10, 0
+resultf:    db      "Day 2: %s", 10, 0
 debugf:     db      "%d", 0
 ; Keypad:
 ; 1 2 3

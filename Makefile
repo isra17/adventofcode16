@@ -3,10 +3,12 @@
 %: %.o
 	gcc -fno-pie -o $@ $^
 
-all: 2
+all: 1 2 2_5
 
 test: all
+	./1
 	./2
+	./2_5
 
 clean:
 	rm *.o
